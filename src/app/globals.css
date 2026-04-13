@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f0e5;
+  --foreground: #15202b;
+  --color-cream: #f6f0e5;
+  --color-sand: #e9dcc1;
+  --color-blush: #f0dfd9;
+  --color-ink: #15202b;
+  --color-muted: #667085;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-heading);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), sans-serif;
+}
+
+.field {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgb(15 23 42 / 0.1);
+  background: white;
+  padding: 0.875rem 1rem;
+  color: var(--color-ink);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field:focus {
+  border-color: rgb(15 23 42 / 0.2);
+  box-shadow: 0 0 0 4px rgb(21 32 43 / 0.08);
+}
