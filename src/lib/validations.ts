@@ -1,10 +1,10 @@
 import { HabitFrequencyType, HabitType } from "@prisma/client";
 import { z } from "zod";
 
-import { WEEKDAY_OPTIONS } from "@/lib/dates";
+import { WEEKDAY_VALUES } from "@/lib/dates";
 import { getDictionary, type Locale } from "@/lib/i18n";
 
-const weekdayValues = WEEKDAY_OPTIONS.map((option) => option.value);
+const weekdayValues = [...WEEKDAY_VALUES];
 
 export function createAuthSchema(locale: Locale) {
   const dictionary = getDictionary(locale);

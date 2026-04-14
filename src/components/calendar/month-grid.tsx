@@ -86,11 +86,15 @@ export function MonthGrid({ locale, month, habits, labels }: MonthGridProps) {
           return (
             <div
               key={iso}
+              aria-label={`${format(day, "PPP", { locale: dateLocale })}: ${completed.length}/${scheduled.length} ${labels.countLabel}`}
               className={`min-h-28 rounded-2xl border p-3 text-left ${tone} ${isCurrentMonth ? "" : "opacity-45"}`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-[var(--color-ink)]">{format(day, "d")}</span>
-                <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--color-muted)]">
+                <span
+                  title={`${completed.length}/${scheduled.length} ${labels.countLabel}`}
+                  className="text-[10px] uppercase tracking-[0.12em] text-[var(--color-muted)]"
+                >
                   {completed.length}/{scheduled.length}
                 </span>
               </div>

@@ -12,15 +12,7 @@ import {
   startOfWeek,
 } from "date-fns";
 
-export const WEEKDAY_OPTIONS = [
-  { value: 1, label: "Lun" },
-  { value: 2, label: "Mar" },
-  { value: 3, label: "Mié" },
-  { value: 4, label: "Jue" },
-  { value: 5, label: "Vie" },
-  { value: 6, label: "Sáb" },
-  { value: 0, label: "Dom" },
-] as const;
+export const WEEKDAY_VALUES = [1, 2, 3, 4, 5, 6, 0] as const;
 
 export function toDateOnly(date: Date) {
   return startOfDay(date);

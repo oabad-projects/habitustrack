@@ -58,7 +58,7 @@ export function AppShell({ children, title, description, userName, locale = "es"
               <p className="mt-1 text-sm text-[var(--color-muted)]">{description}</p>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-3 lg:items-end">
               <nav className="flex flex-wrap gap-2">
                 {links.map((link) => (
                   <Link
@@ -71,9 +71,9 @@ export function AppShell({ children, title, description, userName, locale = "es"
                 ))}
               </nav>
 
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
-                  <span>{resolvedLabels.language}</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2 rounded-full border border-black/10 bg-[var(--color-sand)] px-3 py-2 text-sm text-[var(--color-ink)]">
+                  <span className="font-medium">{resolvedLabels.language}</span>
                   <LocaleSwitcher
                     locale={locale}
                     labels={{

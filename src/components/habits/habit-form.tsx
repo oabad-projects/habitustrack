@@ -6,7 +6,7 @@ import { useActionState, useState } from "react";
 import type { ActionState } from "@/actions/types";
 import { FormMessage } from "@/components/forms/form-message";
 import { SubmitButton } from "@/components/forms/submit-button";
-import { WEEKDAY_OPTIONS } from "@/lib/dates";
+import { WEEKDAY_VALUES } from "@/lib/dates";
 import { getDictionary, type Locale } from "@/lib/i18n";
 
 type HabitFormProps = {
@@ -151,19 +151,19 @@ export function HabitForm({ action, initialValues, locale = "es", labels }: Habi
         <div className="space-y-3">
           <span className="text-sm font-medium text-[var(--color-ink)]">{resolvedLabels.weekdaysLabel}</span>
           <div className="flex flex-wrap gap-2">
-            {WEEKDAY_OPTIONS.map((day) => (
+            {WEEKDAY_VALUES.map((dayValue) => (
               <label
-                key={day.value}
+                key={dayValue}
                 className="inline-flex items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-sm text-[var(--color-ink)]"
               >
                 <input
                   type="checkbox"
                   name="weekDays"
-                  value={day.value}
-                  defaultChecked={initialValues?.weekDays?.includes(day.value)}
+                  value={dayValue}
+                  defaultChecked={initialValues?.weekDays?.includes(dayValue)}
                   className="size-4 rounded border-black/20"
                 />
-                {resolvedLabels.weekdays[day.value]}
+                {resolvedLabels.weekdays[dayValue]}
               </label>
             ))}
           </div>

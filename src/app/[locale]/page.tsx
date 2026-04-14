@@ -16,11 +16,11 @@ export default async function LocalizedHomePage({ params }: HomePageProps) {
     <main className="relative min-h-screen overflow-hidden bg-[var(--color-cream)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.82),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(231,214,181,0.65),_transparent_34%)]" />
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-8 sm:px-6 lg:px-8">
-        <header className="flex items-center justify-between">
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <span className="rounded-full border border-black/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">
             {dictionary.common.appName}
           </span>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <LocaleSwitcher
               locale={locale}
               labels={{
