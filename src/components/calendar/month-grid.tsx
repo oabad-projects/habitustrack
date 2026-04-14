@@ -66,6 +66,43 @@ export function MonthGrid({ locale, month, habits, weekStartsOn, labels }: Month
     }).length;
   }, 0);
   const completionRate = scheduledTotal === 0 ? 0 : Math.round((completedTotal / scheduledTotal) * 100);
+  const monthChips = [-1, 0, 1].map((offset) => {
+    const candidate = new Date(month.getFullYear(), month.getMonth() + offset, 1);
+
+    return {
+      href: `/${locale}/calendar?month=${format(candidate, "yyyy-MM")}`,
+      label: format(candidate, "MMM yyyy", { locale: dateLocale }),
+      active: offset === 0,
+    };
+  });
+  const dayStats = range.days.map((day) => {
+    const iso = toIsoDate(day);
+    const scheduled = habits.filter((habit) => {
+      if (habit.frequencyType === "DAILY") {
+        return true;
+      }
+      return habit.weekDays.includes(day.getDay());
+    });
+    const completed = scheduled.filter((habit) => {
+      const entry = habit.entries.find((item) => toIsoDate(item.date) === iso);
+      const value = entry ? Number(entry.value) : 0;
+
+      return habit.type === HabitType.CHECK
+        ? value >= 1
+        : habit.targetValue
+          ? value >= Number(habit.targetValue)
+          : value > 0;
+    });
+
+    return {
+      day,
+      iso,
+      scheduled,
+      completed,
+      isCurrentMonth: isSameMonth(day, month),
+    };
+  });
+  const mobileDays = dayStats.filter((day) => day.scheduled.length > 0);
 
   return (
     <section className="space-y-4">
@@ -97,61 +134,92 @@ export function MonthGrid({ locale, month, habits, weekStartsOn, labels }: Month
         </Link>
       </div>
 
-      <div className="grid grid-cols-7 gap-2 text-center text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">
+      <div className="flex gap-2 overflow-x-auto pb-1 sm:hidden">
+        {monthChips.map((chip) => (
+          <Link
+            key={chip.href}
+            href={chip.href}
+            className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition ${
+              chip.active
+                ? "border-transparent bg-[var(--color-ink)] text-white"
+                : "border-black/10 bg-white text-[var(--color-ink)]"
+            }`}
+          >
+            {chip.label}
+          </Link>
+        ))}
+      </div>
+
+      <div className="space-y-3 sm:hidden">
+        {mobileDays.map((item) => (
+          <div
+            key={item.iso}
+            className={`rounded-[1.5rem] border p-4 ${
+              item.completed.length > 0
+                ? "border-emerald-200 bg-emerald-50"
+                : "border-amber-200 bg-amber-50"
+            }`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">
+                  {format(item.day, "EEE", { locale: dateLocale })}
+                </p>
+                <p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">
+                  {format(item.day, "d MMMM", { locale: dateLocale })}
+                </p>
+              </div>
+              <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-[var(--color-ink)]">
+                {item.completed.length}/{item.scheduled.length}
+              </span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2 text-xs text-[var(--color-muted)]">
+              <span className="rounded-full bg-white/80 px-3 py-2">
+                {item.scheduled.length} {labels.scheduled}
+              </span>
+              <span className="rounded-full bg-white/80 px-3 py-2">
+                {item.completed.length} {labels.completed}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="hidden grid-cols-7 gap-2 text-center text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)] sm:grid">
         {range.days.slice(0, 7).map((day) => (
           <div key={day.toISOString()}>{format(day, "EEE", { locale: dateLocale })}</div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-2">
-        {range.days.map((day) => {
-          const iso = toIsoDate(day);
-          const scheduled = habits.filter((habit) => {
-            if (habit.frequencyType === "DAILY") {
-              return true;
-            }
-            return habit.weekDays.includes(day.getDay());
-          });
-
-          const completed = scheduled.filter((habit) => {
-            const entry = habit.entries.find((item) => toIsoDate(item.date) === iso);
-            const value = entry ? Number(entry.value) : 0;
-
-            return habit.type === HabitType.CHECK
-              ? value >= 1
-              : habit.targetValue
-                ? value >= Number(habit.targetValue)
-                : value > 0;
-          });
-
-          const isCurrentMonth = isSameMonth(day, month);
+      <div className="hidden grid-cols-7 gap-2 sm:grid">
+        {dayStats.map((item) => {
           const tone =
-            completed.length > 0
+            item.completed.length > 0
               ? "border-emerald-200 bg-emerald-50"
-              : scheduled.length > 0
+              : item.scheduled.length > 0
                 ? "border-amber-200 bg-amber-50"
                 : "border-black/5 bg-white";
 
           return (
             <div
-              key={iso}
-              aria-label={`${format(day, "PPP", { locale: dateLocale })}: ${completed.length}/${scheduled.length} ${labels.countLabel}`}
-              className={`min-h-28 rounded-2xl border p-3 text-left ${tone} ${isCurrentMonth ? "" : "opacity-45"}`}
+              key={item.iso}
+              aria-label={`${format(item.day, "PPP", { locale: dateLocale })}: ${item.completed.length}/${item.scheduled.length} ${labels.countLabel}`}
+              className={`min-h-28 rounded-2xl border p-3 text-left ${tone} ${item.isCurrentMonth ? "" : "opacity-45"}`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-[var(--color-ink)]">{format(day, "d")}</span>
+                <span className="text-sm font-semibold text-[var(--color-ink)]">{format(item.day, "d")}</span>
                 <span
-                  title={`${completed.length}/${scheduled.length} ${labels.countLabel}`}
+                  title={`${item.completed.length}/${item.scheduled.length} ${labels.countLabel}`}
                   className="text-[10px] uppercase tracking-[0.12em] text-[var(--color-muted)]"
                 >
-                  {completed.length}/{scheduled.length}
+                  {item.completed.length}/{item.scheduled.length}
                 </span>
               </div>
 
               <div className="mt-3 space-y-1 text-xs text-[var(--color-muted)]">
-                <p>{scheduled.length} {labels.scheduled}</p>
-                <p>{completed.length} {labels.completed}</p>
-                {scheduled.length === 0 ? <p>{labels.empty}</p> : null}
+                <p>{item.scheduled.length} {labels.scheduled}</p>
+                <p>{item.completed.length} {labels.completed}</p>
+                {item.scheduled.length === 0 ? <p>{labels.empty}</p> : null}
               </div>
             </div>
           );

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { logoutAction } from "@/actions/auth";
+import { AppNav } from "@/components/layout/app-nav";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { getDictionary, type Locale } from "@/lib/i18n";
 
@@ -59,17 +60,7 @@ export function AppShell({ children, title, description, userName, locale = "es"
             </div>
 
             <div className="flex flex-col gap-3 lg:items-end">
-              <nav className="flex flex-wrap gap-2">
-                {links.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="rounded-full border border-black/10 px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition hover:border-black/20 hover:bg-[var(--color-sand)]"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
+              <AppNav links={links} />
 
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-2 rounded-full border border-black/10 bg-[var(--color-sand)] px-3 py-2 text-sm text-[var(--color-ink)]">
@@ -94,7 +85,7 @@ export function AppShell({ children, title, description, userName, locale = "es"
           </div>
         </header>
 
-        <main className="flex-1 py-6">{children}</main>
+        <main className="flex-1 py-6 pb-28 lg:pb-6">{children}</main>
       </div>
     </div>
   );
