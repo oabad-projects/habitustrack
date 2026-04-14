@@ -4,13 +4,16 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { clearSession, createSession, hashPassword, verifyPassword } from "@/lib/auth";
+import { getDictionary, getLocaleFromFormData, localizePath } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
-import { authSchema } from "@/lib/validations";
+import { createAuthSchema } from "@/lib/validations";
 
 import type { ActionState } from "@/actions/types";
 
 export async function registerAction(_: ActionState, formData: FormData): Promise<ActionState> {
-  const parsed = authSchema.safeParse({
+  const locale = getLocaleFromFormData(formData);
+  const dictionary = getDictionary(locale);
+  const parsed = createAuthSchema(locale).safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
@@ -19,7 +22,7 @@ export async function registerAction(_: ActionState, formData: FormData): Promis
   if (!parsed.success) {
     return {
       success: false,
-      message: parsed.error.issues[0]?.message ?? "No se pudo crear la cuenta",
+      message: parsed.error.issues[0]?.message ?? dictionary.actionMessages.accountCreateFailed,
     };
   }
 
@@ -31,7 +34,7 @@ export async function registerAction(_: ActionState, formData: FormData): Promis
   if (existingUser) {
     return {
       success: false,
-      message: "Ya existe una cuenta con ese email",
+      message: dictionary.actionMessages.emailExists,
     };
   }
 
@@ -44,12 +47,14 @@ export async function registerAction(_: ActionState, formData: FormData): Promis
   });
 
   await createSession(user.id, user.email);
-  revalidatePath("/");
-  redirect("/today");
+  revalidatePath(localizePath(locale, "/"));
+  redirect(localizePath(locale, "/today"));
 }
 
 export async function loginAction(_: ActionState, formData: FormData): Promise<ActionState> {
-  const parsed = authSchema.omit({ name: true }).safeParse({
+  const locale = getLocaleFromFormData(formData);
+  const dictionary = getDictionary(locale);
+  const parsed = createAuthSchema(locale).omit({ name: true }).safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
   });
@@ -57,7 +62,7 @@ export async function loginAction(_: ActionState, formData: FormData): Promise<A
   if (!parsed.success) {
     return {
       success: false,
-      message: parsed.error.issues[0]?.message ?? "Credenciales inválidas",
+      message: parsed.error.issues[0]?.message ?? dictionary.actionMessages.invalidCredentials,
     };
   }
 
@@ -68,7 +73,7 @@ export async function loginAction(_: ActionState, formData: FormData): Promise<A
   if (!user) {
     return {
       success: false,
-      message: "Credenciales inválidas",
+      message: dictionary.actionMessages.invalidCredentials,
     };
   }
 
@@ -77,16 +82,17 @@ export async function loginAction(_: ActionState, formData: FormData): Promise<A
   if (!isValid) {
     return {
       success: false,
-      message: "Credenciales inválidas",
+      message: dictionary.actionMessages.invalidCredentials,
     };
   }
 
   await createSession(user.id, user.email);
-  revalidatePath("/");
-  redirect("/today");
+  revalidatePath(localizePath(locale, "/"));
+  redirect(localizePath(locale, "/today"));
 }
 
-export async function logoutAction() {
+export async function logoutAction(formData: FormData) {
+  const locale = getLocaleFromFormData(formData);
   await clearSession();
-  redirect("/login");
+  redirect(localizePath(locale, "/login"));
 }

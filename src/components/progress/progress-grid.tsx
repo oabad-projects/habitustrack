@@ -2,19 +2,46 @@ import { HabitType, type Habit, type HabitEntry } from "@prisma/client";
 import { format } from "date-fns";
 
 import { getWeekSummary } from "@/lib/habits";
+import { getDictionary, type Locale } from "@/lib/i18n";
 import { formatNumericValue } from "@/lib/utils";
 
 type ProgressGridProps = {
   habits: Array<Habit & { entries: HabitEntry[] }>;
+  locale?: Locale;
+  labels?: {
+    emptyTitle: string;
+    emptyDescription: string;
+    completedDays: string;
+    completion: string;
+    typeCheck: string;
+    typeNumber: string;
+    streak: string;
+    day: string;
+    days: string;
+    goal: string;
+  };
 };
 
-export function ProgressGrid({ habits }: ProgressGridProps) {
+export function ProgressGrid({ habits, locale = "es", labels }: ProgressGridProps) {
+  const dictionary = getDictionary(locale);
+  const resolvedLabels = labels ?? {
+    emptyTitle: dictionary.progressPage.emptyTitle,
+    emptyDescription: dictionary.progressPage.emptyDescription,
+    completedDays: dictionary.progressPage.completedDays,
+    completion: dictionary.progressPage.completion,
+    typeCheck: dictionary.common.typeCheck,
+    typeNumber: dictionary.common.typeNumber,
+    streak: dictionary.progressPage.streak,
+    day: dictionary.progressPage.day,
+    days: dictionary.progressPage.days,
+    goal: dictionary.progressPage.goal,
+  };
   if (habits.length === 0) {
     return (
       <section className="rounded-[2rem] border border-dashed border-black/10 bg-white/70 p-8 text-center">
-        <h2 className="text-xl font-semibold text-[var(--color-ink)]">Aún no hay progreso que mostrar</h2>
+        <h2 className="text-xl font-semibold text-[var(--color-ink)]">{resolvedLabels.emptyTitle}</h2>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
-          Empieza creando hábitos y registrando tu día para ver el resumen semanal.
+          {resolvedLabels.emptyDescription}
         </p>
       </section>
     );
@@ -34,11 +61,11 @@ export function ProgressGrid({ habits }: ProgressGridProps) {
               <div>
                 <h3 className="text-xl font-semibold text-[var(--color-ink)]">{habit.name}</h3>
                 <p className="mt-1 text-sm text-[var(--color-muted)]">
-                  {summary.completedDays}/{summary.scheduledCount} días completados · {summary.completionRate}% cumplimiento
+                  {summary.completedDays}/{summary.scheduledCount} {resolvedLabels.completedDays} · {summary.completionRate}% {resolvedLabels.completion}
                 </p>
               </div>
               <span className="rounded-full bg-[var(--color-sand)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]">
-                {habit.type === HabitType.CHECK ? "Check" : "Numérico"}
+                {habit.type === HabitType.CHECK ? resolvedLabels.typeCheck : resolvedLabels.typeNumber}
               </span>
             </div>
 
@@ -54,7 +81,7 @@ export function ProgressGrid({ habits }: ProgressGridProps) {
                 >
                   <p className="text-xs font-semibold uppercase tracking-[0.14em]">{format(day.date, "EEE")}</p>
                   <p className="mt-2 text-sm font-semibold">
-                    {habit.type === HabitType.CHECK ? (day.completed ? "OK" : "—") : day.value ? formatNumericValue(day.value) : "—"}
+                    {habit.type === HabitType.CHECK ? (day.completed ? "OK" : "—") : day.value ? formatNumericValue(day.value, locale) : "—"}
                   </p>
                 </div>
               ))}
@@ -62,11 +89,11 @@ export function ProgressGrid({ habits }: ProgressGridProps) {
 
             <div className="mt-5 flex flex-wrap gap-3 text-sm text-[var(--color-muted)]">
               <span className="rounded-full bg-[var(--color-blush)] px-3 py-2">
-                Racha actual: {summary.streak} día{summary.streak === 1 ? "" : "s"}
+                {resolvedLabels.streak}: {summary.streak} {summary.streak === 1 ? resolvedLabels.day : resolvedLabels.days}
               </span>
               {habit.targetValue ? (
                 <span className="rounded-full bg-[var(--color-sand)] px-3 py-2">
-                  Objetivo: {formatNumericValue(habit.targetValue.toString())} {habit.unit ?? ""}
+                  {resolvedLabels.goal}: {formatNumericValue(habit.targetValue.toString(), locale)} {habit.unit ?? ""}
                 </span>
               ) : null}
             </div>

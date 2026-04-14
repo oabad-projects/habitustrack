@@ -2,48 +2,57 @@ import { HabitFrequencyType, HabitType } from "@prisma/client";
 import { z } from "zod";
 
 import { WEEKDAY_OPTIONS } from "@/lib/dates";
+import { getDictionary, type Locale } from "@/lib/i18n";
 
 const weekdayValues = WEEKDAY_OPTIONS.map((option) => option.value);
 
-export const authSchema = z.object({
-  name: z.string().trim().max(80).optional().or(z.literal("")),
-  email: z.email("Introduce un email válido").trim().toLowerCase(),
-  password: z
-    .string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres")
-    .max(128, "La contraseña es demasiado larga"),
-});
+export function createAuthSchema(locale: Locale) {
+  const dictionary = getDictionary(locale);
 
-export const habitSchema = z
-  .object({
-    id: z.string().optional(),
-    name: z.string().trim().min(2, "El nombre es obligatorio").max(80),
-    type: z.enum(HabitType),
-    unit: z.string().trim().max(16).optional().or(z.literal("")),
-    targetValue: z.coerce.number().positive().max(100000).optional(),
-    frequencyType: z.enum(HabitFrequencyType),
-    weekDays: z.array(z.coerce.number().int()).default([]),
-    isActive: z.boolean().default(true),
-  })
-  .superRefine((value, ctx) => {
-    if (value.frequencyType === HabitFrequencyType.WEEKLY_DAYS) {
-      if (value.weekDays.length === 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["weekDays"],
-          message: "Selecciona al menos un día de la semana",
-        });
-      }
-
-      if (!value.weekDays.every((day) => weekdayValues.some((weekday) => weekday === day))) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["weekDays"],
-          message: "Los días seleccionados no son válidos",
-        });
-      }
-    }
+  return z.object({
+    name: z.string().trim().max(80).optional().or(z.literal("")),
+    email: z.email(dictionary.actionMessages.validEmail).trim().toLowerCase(),
+    password: z
+      .string()
+      .min(8, dictionary.actionMessages.passwordLength)
+      .max(128, dictionary.actionMessages.passwordTooLong),
   });
+}
+
+export function createHabitSchema(locale: Locale) {
+  const dictionary = getDictionary(locale);
+
+  return z
+    .object({
+      id: z.string().optional(),
+      name: z.string().trim().min(2, dictionary.actionMessages.habitNameRequired).max(80),
+      type: z.enum(HabitType),
+      unit: z.string().trim().max(16).optional().or(z.literal("")),
+      targetValue: z.coerce.number().positive().max(100000).optional(),
+      frequencyType: z.enum(HabitFrequencyType),
+      weekDays: z.array(z.coerce.number().int()).default([]),
+      isActive: z.boolean().default(true),
+    })
+    .superRefine((value, ctx) => {
+      if (value.frequencyType === HabitFrequencyType.WEEKLY_DAYS) {
+        if (value.weekDays.length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["weekDays"],
+            message: dictionary.actionMessages.weekDaysRequired,
+          });
+        }
+
+        if (!value.weekDays.every((day) => weekdayValues.some((weekday) => weekday === day))) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["weekDays"],
+            message: dictionary.actionMessages.invalidWeekDays,
+          });
+        }
+      }
+    });
+}
 
 export const habitEntrySchema = z.object({
   habitId: z.string().min(1),
@@ -51,5 +60,5 @@ export const habitEntrySchema = z.object({
   value: z.coerce.number().min(0).max(100000),
 });
 
-export type HabitFormValues = z.infer<typeof habitSchema>;
-export type AuthFormValues = z.infer<typeof authSchema>;
+export type HabitFormValues = z.infer<ReturnType<typeof createHabitSchema>>;
+export type AuthFormValues = z.infer<ReturnType<typeof createAuthSchema>>;

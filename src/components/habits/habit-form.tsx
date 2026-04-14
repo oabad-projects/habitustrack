@@ -7,6 +7,7 @@ import type { ActionState } from "@/actions/types";
 import { FormMessage } from "@/components/forms/form-message";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { WEEKDAY_OPTIONS } from "@/lib/dates";
+import { getDictionary, type Locale } from "@/lib/i18n";
 
 type HabitFormProps = {
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
@@ -20,6 +21,24 @@ type HabitFormProps = {
     weekDays?: number[];
     isActive?: boolean;
   };
+  locale?: Locale;
+  labels?: {
+    name: string;
+    namePlaceholder: string;
+    type: string;
+    frequency: string;
+    everyDay: string;
+    specificDays: string;
+    unit: string;
+    unitPlaceholder: string;
+    targetOptional: string;
+    weekdaysLabel: string;
+    keepActive: string;
+    createHabit: string;
+    saveChanges: string;
+    typeCheck: string;
+    typeNumber: string;
+  };
 };
 
 const initialState: ActionState = {
@@ -27,25 +46,44 @@ const initialState: ActionState = {
   message: "",
 };
 
-export function HabitForm({ action, initialValues }: HabitFormProps) {
+export function HabitForm({ action, initialValues, locale = "es", labels }: HabitFormProps) {
+  const dictionary = getDictionary(locale);
+  const resolvedLabels = labels ?? {
+    name: dictionary.habitForm.name,
+    namePlaceholder: dictionary.habitForm.namePlaceholder,
+    type: dictionary.habitForm.type,
+    frequency: dictionary.habitForm.frequency,
+    everyDay: dictionary.habitForm.everyDay,
+    specificDays: dictionary.habitForm.specificDays,
+    unit: dictionary.habitForm.unit,
+    unitPlaceholder: dictionary.habitForm.unitPlaceholder,
+    targetOptional: dictionary.habitForm.targetOptional,
+    weekdaysLabel: dictionary.habitForm.weekdaysLabel,
+    keepActive: dictionary.habitForm.keepActive,
+    createHabit: dictionary.habitForm.createHabit,
+    saveChanges: dictionary.habitForm.saveChanges,
+    typeCheck: dictionary.common.typeCheck,
+    typeNumber: dictionary.common.typeNumber,
+  };
   const [state, formAction] = useActionState(action, initialState);
   const [type, setType] = useState(initialValues?.type ?? HabitType.CHECK);
   const [frequencyType, setFrequencyType] = useState(initialValues?.frequencyType ?? HabitFrequencyType.DAILY);
 
   return (
     <form action={formAction} className="space-y-6 rounded-[2rem] border border-black/5 bg-white p-6 shadow-[0_12px_40px_rgba(15,23,42,0.06)]">
+      <input type="hidden" name="locale" value={locale} />
       {initialValues?.id ? <input type="hidden" name="id" value={initialValues.id} /> : null}
 
       <div className="grid gap-5 md:grid-cols-2">
         <div className="space-y-2 md:col-span-2">
           <label htmlFor="name" className="text-sm font-medium text-[var(--color-ink)]">
-            Nombre del hábito
+            {resolvedLabels.name}
           </label>
           <input
             id="name"
             name="name"
             defaultValue={initialValues?.name ?? ""}
-            placeholder="Ej. Leer 30 minutos"
+            placeholder={resolvedLabels.namePlaceholder}
             className="field"
             required
           />
@@ -53,7 +91,7 @@ export function HabitForm({ action, initialValues }: HabitFormProps) {
 
         <div className="space-y-2">
           <label htmlFor="type" className="text-sm font-medium text-[var(--color-ink)]">
-            Tipo
+            {resolvedLabels.type}
           </label>
           <select
             id="type"
@@ -62,14 +100,14 @@ export function HabitForm({ action, initialValues }: HabitFormProps) {
             onChange={(event) => setType(event.target.value as HabitType)}
             className="field"
           >
-            <option value={HabitType.CHECK}>Check</option>
-            <option value={HabitType.NUMBER}>Numérico</option>
+            <option value={HabitType.CHECK}>{resolvedLabels.typeCheck}</option>
+            <option value={HabitType.NUMBER}>{resolvedLabels.typeNumber}</option>
           </select>
         </div>
 
         <div className="space-y-2">
           <label htmlFor="frequencyType" className="text-sm font-medium text-[var(--color-ink)]">
-            Frecuencia
+            {resolvedLabels.frequency}
           </label>
           <select
             id="frequencyType"
@@ -78,21 +116,21 @@ export function HabitForm({ action, initialValues }: HabitFormProps) {
             onChange={(event) => setFrequencyType(event.target.value as HabitFrequencyType)}
             className="field"
           >
-            <option value={HabitFrequencyType.DAILY}>Todos los días</option>
-            <option value={HabitFrequencyType.WEEKLY_DAYS}>Días concretos</option>
+            <option value={HabitFrequencyType.DAILY}>{resolvedLabels.everyDay}</option>
+            <option value={HabitFrequencyType.WEEKLY_DAYS}>{resolvedLabels.specificDays}</option>
           </select>
         </div>
 
         <div className="space-y-2">
           <label htmlFor="unit" className="text-sm font-medium text-[var(--color-ink)]">
-            Unidad
+            {resolvedLabels.unit}
           </label>
-          <input id="unit" name="unit" defaultValue={initialValues?.unit ?? ""} placeholder="min, km, reps" className="field" />
+          <input id="unit" name="unit" defaultValue={initialValues?.unit ?? ""} placeholder={resolvedLabels.unitPlaceholder} className="field" />
         </div>
 
         <div className="space-y-2">
           <label htmlFor="targetValue" className="text-sm font-medium text-[var(--color-ink)]">
-            Objetivo opcional
+            {resolvedLabels.targetOptional}
           </label>
           <input
             id="targetValue"
@@ -109,7 +147,7 @@ export function HabitForm({ action, initialValues }: HabitFormProps) {
 
       {frequencyType === HabitFrequencyType.WEEKLY_DAYS ? (
         <div className="space-y-3">
-          <span className="text-sm font-medium text-[var(--color-ink)]">Días de la semana</span>
+          <span className="text-sm font-medium text-[var(--color-ink)]">{resolvedLabels.weekdaysLabel}</span>
           <div className="flex flex-wrap gap-2">
             {WEEKDAY_OPTIONS.map((day) => (
               <label
@@ -137,13 +175,13 @@ export function HabitForm({ action, initialValues }: HabitFormProps) {
           defaultChecked={initialValues?.isActive ?? true}
           className="size-4 rounded border-black/20"
         />
-        Mantener el hábito activo
+        {resolvedLabels.keepActive}
       </label>
 
       <FormMessage message={state.message} success={state.success} />
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <SubmitButton>{initialValues?.id ? "Guardar cambios" : "Crear hábito"}</SubmitButton>
+        <SubmitButton>{initialValues?.id ? resolvedLabels.saveChanges : resolvedLabels.createHabit}</SubmitButton>
       </div>
     </form>
   );

@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { env } from "@/lib/env";
+import { localizePath, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 
 const SESSION_COOKIE = "habitustrack_session";
@@ -84,20 +85,20 @@ export async function getCurrentUser() {
   });
 }
 
-export async function requireUser() {
+export async function requireUser(locale: Locale = "es") {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect(localizePath(locale, "/login"));
   }
 
   return user;
 }
 
-export async function requireGuest() {
+export async function requireGuest(locale: Locale = "es") {
   const user = await getCurrentUser();
 
   if (user) {
-    redirect("/today");
+    redirect(localizePath(locale, "/today"));
   }
 }

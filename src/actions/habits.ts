@@ -8,23 +8,28 @@ import type { ActionState } from "@/actions/types";
 import { requireUser } from "@/lib/auth";
 import { fromIsoDate } from "@/lib/dates";
 import { decimal, normalizeHabitFormData } from "@/lib/habits";
+import { getDictionary, getLocaleFromFormData, localizePath, locales } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
-import { habitEntrySchema, habitSchema } from "@/lib/validations";
+import { createHabitSchema, habitEntrySchema } from "@/lib/validations";
 
 function revalidateHabitViews() {
-  revalidatePath("/today");
-  revalidatePath("/habits");
-  revalidatePath("/progress");
+  for (const locale of locales) {
+    revalidatePath(localizePath(locale, "/today"));
+    revalidatePath(localizePath(locale, "/habits"));
+    revalidatePath(localizePath(locale, "/progress"));
+  }
 }
 
 export async function saveHabitAction(_: ActionState, formData: FormData): Promise<ActionState> {
-  const user = await requireUser();
-  const parsed = habitSchema.safeParse(normalizeHabitFormData(formData));
+  const locale = getLocaleFromFormData(formData);
+  const dictionary = getDictionary(locale);
+  const user = await requireUser(locale);
+  const parsed = createHabitSchema(locale).safeParse(normalizeHabitFormData(formData));
 
   if (!parsed.success) {
     return {
       success: false,
-      message: parsed.error.issues[0]?.message ?? "No se pudo guardar el hábito",
+      message: parsed.error.issues[0]?.message ?? dictionary.actionMessages.habitSaveFailed,
     };
   }
 
@@ -48,7 +53,7 @@ export async function saveHabitAction(_: ActionState, formData: FormData): Promi
     if (!existingHabit) {
       return {
         success: false,
-        message: "No se ha encontrado el hábito",
+        message: dictionary.actionMessages.habitNotFound,
       };
     }
 
@@ -63,11 +68,12 @@ export async function saveHabitAction(_: ActionState, formData: FormData): Promi
   }
 
   revalidateHabitViews();
-  redirect("/habits");
+  redirect(localizePath(locale, "/habits"));
 }
 
 export async function deleteHabitAction(formData: FormData) {
-  const user = await requireUser();
+  const locale = getLocaleFromFormData(formData);
+  const user = await requireUser(locale);
   const habitId = String(formData.get("habitId") ?? "");
 
   if (!habitId) {
@@ -85,7 +91,8 @@ export async function deleteHabitAction(formData: FormData) {
 }
 
 export async function toggleHabitAction(formData: FormData) {
-  const user = await requireUser();
+  const locale = getLocaleFromFormData(formData);
+  const user = await requireUser(locale);
   const habitId = String(formData.get("habitId") ?? "");
   const nextValue = String(formData.get("nextValue") ?? "false") === "true";
 
@@ -103,7 +110,8 @@ export async function toggleHabitAction(formData: FormData) {
 }
 
 export async function saveTodayEntryAction(formData: FormData) {
-  const user = await requireUser();
+  const locale = getLocaleFromFormData(formData);
+  const user = await requireUser(locale);
   const parsed = habitEntrySchema.safeParse({
     habitId: formData.get("habitId"),
     date: formData.get("date"),
