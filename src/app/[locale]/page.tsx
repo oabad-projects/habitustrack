@@ -1,14 +1,24 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
-import { getDictionary, resolveLocale } from "@/lib/i18n";
+import { getDictionary, isLocale, locales, resolveLocale } from "@/lib/i18n";
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
 };
 
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
 export default async function LocalizedHomePage({ params }: HomePageProps) {
   const { locale: localeParam } = await params;
+
+  if (!isLocale(localeParam)) {
+    notFound();
+  }
+
   const locale = resolveLocale(localeParam);
   const dictionary = getDictionary(locale);
 
