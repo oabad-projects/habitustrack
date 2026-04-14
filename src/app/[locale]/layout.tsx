@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getDictionary, isLocale } from "@/lib/i18n";
+import { getDictionary, isLocale, locales } from "@/lib/i18n";
 
 type LocaleLayoutProps = {
   children: React.ReactNode;
@@ -20,7 +20,17 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
   return {
     title: dictionary.meta.title,
     description: dictionary.meta.description,
+    alternates: {
+      languages: {
+        es: "/es",
+        en: "/en",
+      },
+    },
   };
+}
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
 }
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
