@@ -14,6 +14,10 @@ import {
 
 export const WEEKDAY_VALUES = [1, 2, 3, 4, 5, 6, 0] as const;
 
+type RangeOptions = {
+  weekStartsOn?: 0 | 1;
+};
+
 export function toDateOnly(date: Date) {
   return startOfDay(date);
 }
@@ -30,9 +34,10 @@ export function getToday() {
   return startOfDay(new Date());
 }
 
-export function getWeekRange(baseDate = new Date()) {
-  const start = startOfWeek(baseDate, { weekStartsOn: 1 });
-  const end = endOfWeek(baseDate, { weekStartsOn: 1 });
+export function getWeekRange(baseDate = new Date(), options: RangeOptions = {}) {
+  const weekStartsOn = options.weekStartsOn ?? 1;
+  const start = startOfWeek(baseDate, { weekStartsOn });
+  const end = endOfWeek(baseDate, { weekStartsOn });
 
   return {
     start,
@@ -41,11 +46,12 @@ export function getWeekRange(baseDate = new Date()) {
   };
 }
 
-export function getMonthRange(baseDate = new Date()) {
+export function getMonthRange(baseDate = new Date(), options: RangeOptions = {}) {
+  const weekStartsOn = options.weekStartsOn ?? 1;
   const monthStart = startOfMonth(baseDate);
   const monthEnd = endOfMonth(baseDate);
-  const start = startOfWeek(monthStart, { weekStartsOn: 1 });
-  const end = endOfWeek(monthEnd, { weekStartsOn: 1 });
+  const start = startOfWeek(monthStart, { weekStartsOn });
+  const end = endOfWeek(monthEnd, { weekStartsOn });
 
   return {
     monthStart,

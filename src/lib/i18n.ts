@@ -53,6 +53,10 @@ export function getNumberLocale(locale: Locale) {
   return locale === "en" ? "en-US" : "es-ES";
 }
 
+export function getWeekStartsOn(locale: Locale) {
+  return locale === "en" ? 0 : 1;
+}
+
 export function getLocaleFromFormData(formData: FormData): Locale {
   return resolveLocale(String(formData.get("locale") ?? defaultLocale));
 }
@@ -186,9 +190,11 @@ type Dictionary = {
     eyebrow: string;
     title: string;
     description: string;
+    monthSummary: string;
     empty: string;
     scheduled: string;
     completed: string;
+    completion: string;
     noHabits: string;
     previousMonth: string;
     nextMonth: string;
@@ -340,9 +346,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
       eyebrow: "Vista mensual",
       title: "Calendario de hábitos",
       description: "Una vista simple por mes para ver carga, cumplimiento y continuidad de un vistazo.",
+      monthSummary: "Resumen del mes",
       empty: "Sin datos",
       scheduled: "programados",
       completed: "completados",
+      completion: "cumplimiento",
       noHabits: "No hay hábitos activos para este mes.",
       previousMonth: "Mes anterior",
       nextMonth: "Mes siguiente",
@@ -492,9 +500,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
       eyebrow: "Monthly view",
       title: "Habit calendar",
       description: "A simple monthly view to understand workload, completion, and continuity at a glance.",
+      monthSummary: "Month summary",
       empty: "No data",
       scheduled: "scheduled",
       completed: "completed",
+      completion: "completion",
       noHabits: "There are no active habits for this month.",
       previousMonth: "Previous month",
       nextMonth: "Next month",

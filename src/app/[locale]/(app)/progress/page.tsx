@@ -1,7 +1,7 @@
 import { ProgressGrid } from "@/components/progress/progress-grid";
 import { requireUser } from "@/lib/auth";
 import { getWeekRange } from "@/lib/dates";
-import { getDictionary, resolveLocale } from "@/lib/i18n";
+import { getDictionary, getWeekStartsOn, resolveLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 
 type ProgressPageProps = {
@@ -13,7 +13,7 @@ export default async function ProgressPage({ params }: ProgressPageProps) {
   const locale = resolveLocale(localeParam);
   const dictionary = getDictionary(locale);
   const user = await requireUser(locale);
-  const week = getWeekRange();
+  const week = getWeekRange(new Date(), { weekStartsOn: getWeekStartsOn(locale) });
 
   const habits = await prisma.habit.findMany({
     where: { userId: user.id, isActive: true },

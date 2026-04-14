@@ -7,6 +7,8 @@ import {
 } from "@prisma/client";
 
 import { getWeekRange, getWeekday, toDateOnly, toIsoDate } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
+import { getWeekStartsOn } from "@/lib/i18n";
 
 export type HabitWithEntries = Habit & {
   entries: HabitEntry[];
@@ -61,8 +63,8 @@ export function getCompletionLabel(habit: HabitWithEntries, date: Date) {
   return `${value}${habit.unit ? ` ${habit.unit}` : ""}`;
 }
 
-export function getWeekSummary(habit: HabitWithEntries, baseDate = new Date()) {
-  const range = getWeekRange(baseDate);
+export function getWeekSummary(habit: HabitWithEntries, baseDate = new Date(), locale: Locale = "es") {
+  const range = getWeekRange(baseDate, { weekStartsOn: getWeekStartsOn(locale) });
   const scheduledDays = range.days.filter((day) => isHabitScheduledForDate(habit, day));
   const entriesByDate = new Map(habit.entries.map((entry) => [toIsoDate(entry.date), Number(entry.value)]));
 

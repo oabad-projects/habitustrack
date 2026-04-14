@@ -3,7 +3,7 @@ import { parse, isValid } from "date-fns";
 import { MonthGrid } from "@/components/calendar/month-grid";
 import { requireUser } from "@/lib/auth";
 import { getMonthRange } from "@/lib/dates";
-import { getDictionary, resolveLocale } from "@/lib/i18n";
+import { getDictionary, getWeekStartsOn, resolveLocale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 
 type CalendarPageProps = {
@@ -27,7 +27,8 @@ export default async function CalendarPage({ params, searchParams }: CalendarPag
   const user = await requireUser(locale);
   const monthParam = (await searchParams).month;
   const month = resolveMonth(monthParam);
-  const range = getMonthRange(month);
+  const weekStartsOn = getWeekStartsOn(locale);
+  const range = getMonthRange(month, { weekStartsOn });
 
   const habits = await prisma.habit.findMany({
     where: {
@@ -61,10 +62,13 @@ export default async function CalendarPage({ params, searchParams }: CalendarPag
         locale={locale}
         month={month}
         habits={habits}
+        weekStartsOn={weekStartsOn}
         labels={{
+          monthSummary: dictionary.calendarPage.monthSummary,
           empty: dictionary.calendarPage.empty,
           scheduled: dictionary.calendarPage.scheduled,
           completed: dictionary.calendarPage.completed,
+          completion: dictionary.calendarPage.completion,
           noHabits: dictionary.calendarPage.noHabits,
           previousMonth: dictionary.calendarPage.previousMonth,
           nextMonth: dictionary.calendarPage.nextMonth,

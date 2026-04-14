@@ -50,7 +50,7 @@ export function ProgressGrid({ habits, locale = "es", labels }: ProgressGridProp
   return (
     <section className="grid gap-4 lg:grid-cols-2">
       {habits.map((habit) => {
-        const summary = getWeekSummary(habit);
+        const summary = getWeekSummary(habit, new Date(), locale);
 
         return (
           <article
