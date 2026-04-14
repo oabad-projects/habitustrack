@@ -2,7 +2,7 @@ import { HabitType } from "@prisma/client";
 
 import { saveTodayEntryAction } from "@/actions/habits";
 import type { HabitWithEntries } from "@/lib/habits";
-import { getCompletionLabel, getTodayValue } from "@/lib/habits";
+import { getTodayValue } from "@/lib/habits";
 import { getDictionary, type Locale } from "@/lib/i18n";
 import { formatNumericValue } from "@/lib/utils";
 
@@ -21,6 +21,9 @@ type TodayListProps = {
     markPending: string;
     markDone: string;
     save: string;
+    done: string;
+    pending: string;
+    noEntry: string;
   };
 };
 
@@ -36,6 +39,9 @@ export function TodayList({ habits, date, dateLabel, locale = "es", labels }: To
     markPending: dictionary.todayPage.markPending,
     markDone: dictionary.todayPage.markDone,
     save: dictionary.common.save,
+    done: dictionary.todayPage.done,
+    pending: dictionary.todayPage.pending,
+    noEntry: dictionary.todayPage.noEntry,
   };
   if (habits.length === 0) {
     return (
@@ -71,7 +77,14 @@ export function TodayList({ habits, date, dateLabel, locale = "es", labels }: To
                   {habit.unit ?? ""}
                 </p>
                 <p className="text-sm text-[var(--color-muted)]">
-                  {dateLabel} · {getCompletionLabel(habit, new Date(date))}
+                  {dateLabel} ·{" "}
+                  {habit.type === HabitType.CHECK
+                    ? todayValue === 1
+                      ? resolvedLabels.done
+                      : resolvedLabels.pending
+                    : todayValue === null || todayValue === 0
+                      ? resolvedLabels.noEntry
+                      : `${formatNumericValue(todayValue, locale)}${habit.unit ? ` ${habit.unit}` : ""}`}
                 </p>
               </div>
 

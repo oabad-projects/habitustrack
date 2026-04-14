@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { logoutAction } from "@/actions/auth";
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { getDictionary, type Locale } from "@/lib/i18n";
 
 type AppShellProps = {
@@ -70,13 +71,13 @@ export function AppShell({ children, title, description, userName, locale = "es"
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
                   <span>{resolvedLabels.language}</span>
-                  <Link href="/es/today" className={locale === "es" ? "font-semibold text-[var(--color-ink)]" : ""}>
-                    {resolvedLabels.spanish}
-                  </Link>
-                  <span>/</span>
-                  <Link href="/en/today" className={locale === "en" ? "font-semibold text-[var(--color-ink)]" : ""}>
-                    {resolvedLabels.english}
-                  </Link>
+                  <LocaleSwitcher
+                    locale={locale}
+                    labels={{
+                      english: resolvedLabels.english,
+                      spanish: resolvedLabels.spanish,
+                    }}
+                  />
                 </div>
                 <span className="text-sm text-[var(--color-muted)]">{userName ?? resolvedLabels.yourSpace}</span>
                 <form action={logoutAction}>

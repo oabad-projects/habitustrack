@@ -2,7 +2,7 @@ import { HabitType, type Habit, type HabitEntry } from "@prisma/client";
 import { format } from "date-fns";
 
 import { getWeekSummary } from "@/lib/habits";
-import { getDictionary, type Locale } from "@/lib/i18n";
+import { getDateLocale, getDictionary, type Locale } from "@/lib/i18n";
 import { formatNumericValue } from "@/lib/utils";
 
 type ProgressGridProps = {
@@ -79,7 +79,7 @@ export function ProgressGrid({ habits, locale = "es", labels }: ProgressGridProp
                       : "border-black/5 bg-[var(--color-cream)] text-[var(--color-muted)]"
                   }`}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em]">{format(day.date, "EEE")}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em]">{format(day.date, "EEE", { locale: getDateLocale(locale) })}</p>
                   <p className="mt-2 text-sm font-semibold">
                     {habit.type === HabitType.CHECK ? (day.completed ? "OK" : "—") : day.value ? formatNumericValue(day.value, locale) : "—"}
                   </p>

@@ -55,6 +55,7 @@ export default async function EditHabitPage({ params }: EditHabitPageProps) {
           unitPlaceholder: dictionary.habitForm.unitPlaceholder,
           targetOptional: dictionary.habitForm.targetOptional,
           weekdaysLabel: dictionary.habitForm.weekdaysLabel,
+          weekdays: dictionary.habitsPage.weekdays,
           keepActive: dictionary.habitForm.keepActive,
           createHabit: dictionary.habitForm.createHabit,
           saveChanges: dictionary.habitForm.saveChanges,

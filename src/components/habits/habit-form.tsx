@@ -33,6 +33,7 @@ type HabitFormProps = {
     unitPlaceholder: string;
     targetOptional: string;
     weekdaysLabel: string;
+    weekdays: string[];
     keepActive: string;
     createHabit: string;
     saveChanges: string;
@@ -59,6 +60,7 @@ export function HabitForm({ action, initialValues, locale = "es", labels }: Habi
     unitPlaceholder: dictionary.habitForm.unitPlaceholder,
     targetOptional: dictionary.habitForm.targetOptional,
     weekdaysLabel: dictionary.habitForm.weekdaysLabel,
+    weekdays: dictionary.habitsPage.weekdays,
     keepActive: dictionary.habitForm.keepActive,
     createHabit: dictionary.habitForm.createHabit,
     saveChanges: dictionary.habitForm.saveChanges,
@@ -161,7 +163,7 @@ export function HabitForm({ action, initialValues, locale = "es", labels }: Habi
                   defaultChecked={initialValues?.weekDays?.includes(day.value)}
                   className="size-4 rounded border-black/20"
                 />
-                {day.label}
+                {resolvedLabels.weekdays[day.value]}
               </label>
             ))}
           </div>

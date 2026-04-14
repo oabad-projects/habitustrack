@@ -52,6 +52,9 @@ export default async function TodayPage({ params }: TodayPageProps) {
           markPending: dictionary.todayPage.markPending,
           markDone: dictionary.todayPage.markDone,
           save: dictionary.common.save,
+          done: dictionary.todayPage.done,
+          pending: dictionary.todayPage.pending,
+          noEntry: dictionary.todayPage.noEntry,
         }}
       />
     </div>

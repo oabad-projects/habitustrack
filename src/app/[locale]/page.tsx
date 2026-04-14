@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { getDictionary, resolveLocale } from "@/lib/i18n";
 
 type HomePageProps = {
@@ -20,15 +21,13 @@ export default async function LocalizedHomePage({ params }: HomePageProps) {
             {dictionary.common.appName}
           </span>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
-              <Link href="/es" className={locale === "es" ? "font-semibold text-[var(--color-ink)]" : ""}>
-                {dictionary.common.spanish}
-              </Link>
-              <span>/</span>
-              <Link href="/en" className={locale === "en" ? "font-semibold text-[var(--color-ink)]" : ""}>
-                {dictionary.common.english}
-              </Link>
-            </div>
+            <LocaleSwitcher
+              locale={locale}
+              labels={{
+                english: dictionary.common.english,
+                spanish: dictionary.common.spanish,
+              }}
+            />
             <Link href={`/${locale}/login`} className="rounded-full border border-black/10 px-4 py-2 text-sm font-medium text-[var(--color-ink)]">
               {dictionary.common.login}
             </Link>
