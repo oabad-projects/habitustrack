@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 import { getPreferredLocale, localizePath, stripLocaleFromPath } from "@/lib/i18n";
 
-const protectedPaths = ["/today", "/habits", "/progress"];
+const protectedPaths = ["/today", "/habits", "/progress", "/calendar"];
 const authPaths = ["/login", "/register"];
 
 export function middleware(request: NextRequest) {

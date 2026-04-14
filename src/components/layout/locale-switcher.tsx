@@ -20,11 +20,17 @@ export function LocaleSwitcher({ locale, labels }: LocaleSwitcherProps) {
 
   return (
     <>
-      <Link href={`/es${suffix}`} className={locale === "es" ? "font-semibold text-[var(--color-ink)]" : ""}>
+      <Link
+        href={`/es${suffix}`}
+        className={`rounded-full px-2 py-1 ${locale === "es" ? "bg-[var(--color-sand)] font-semibold text-[var(--color-ink)]" : "hover:text-[var(--color-ink)]"}`}
+      >
         {labels.spanish}
       </Link>
       <span>/</span>
-      <Link href={`/en${suffix}`} className={locale === "en" ? "font-semibold text-[var(--color-ink)]" : ""}>
+      <Link
+        href={`/en${suffix}`}
+        className={`rounded-full px-2 py-1 ${locale === "en" ? "bg-[var(--color-sand)] font-semibold text-[var(--color-ink)]" : "hover:text-[var(--color-ink)]"}`}
+      >
         {labels.english}
       </Link>
     </>

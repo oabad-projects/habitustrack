@@ -23,6 +23,7 @@ export default async function PrivateLayout({ children, params }: PrivateLayoutP
         today: dictionary.common.today,
         habits: dictionary.common.habits,
         progress: dictionary.common.progress,
+        calendar: dictionary.common.calendar,
         logout: dictionary.common.logout,
         yourSpace: dictionary.common.yourSpace,
         appName: dictionary.common.appName,

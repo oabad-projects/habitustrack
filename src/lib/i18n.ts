@@ -81,6 +81,7 @@ type Dictionary = {
     today: string;
     habits: string;
     progress: string;
+    calendar: string;
     yourSpace: string;
     language: string;
     english: string;
@@ -181,6 +182,18 @@ type Dictionary = {
     days: string;
     goal: string;
   };
+  calendarPage: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    empty: string;
+    scheduled: string;
+    completed: string;
+    noHabits: string;
+    previousMonth: string;
+    nextMonth: string;
+    countLabel: string;
+  };
   actionMessages: {
     accountCreateFailed: string;
     invalidCredentials: string;
@@ -222,6 +235,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       today: "Hoy",
       habits: "Hábitos",
       progress: "Progreso",
+      calendar: "Calendario",
       yourSpace: "Tu espacio",
       language: "Idioma",
       english: "English",
@@ -322,6 +336,18 @@ export const dictionaries: Record<Locale, Dictionary> = {
       days: "días",
       goal: "Objetivo",
     },
+    calendarPage: {
+      eyebrow: "Vista mensual",
+      title: "Calendario de hábitos",
+      description: "Una vista simple por mes para ver carga, cumplimiento y continuidad de un vistazo.",
+      empty: "Sin datos",
+      scheduled: "programados",
+      completed: "completados",
+      noHabits: "No hay hábitos activos para este mes.",
+      previousMonth: "Mes anterior",
+      nextMonth: "Mes siguiente",
+      countLabel: "cumplidos",
+    },
     actionMessages: {
       accountCreateFailed: "No se pudo crear la cuenta",
       invalidCredentials: "Credenciales inválidas",
@@ -361,6 +387,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       today: "Today",
       habits: "Habits",
       progress: "Progress",
+      calendar: "Calendar",
       yourSpace: "Your space",
       language: "Language",
       english: "English",
@@ -460,6 +487,18 @@ export const dictionaries: Record<Locale, Dictionary> = {
       day: "day",
       days: "days",
       goal: "Goal",
+    },
+    calendarPage: {
+      eyebrow: "Monthly view",
+      title: "Habit calendar",
+      description: "A simple monthly view to understand workload, completion, and continuity at a glance.",
+      empty: "No data",
+      scheduled: "scheduled",
+      completed: "completed",
+      noHabits: "There are no active habits for this month.",
+      previousMonth: "Previous month",
+      nextMonth: "Next month",
+      countLabel: "done",
     },
     actionMessages: {
       accountCreateFailed: "Could not create the account",

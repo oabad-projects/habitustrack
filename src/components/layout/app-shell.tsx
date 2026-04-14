@@ -14,6 +14,7 @@ type AppShellProps = {
     today: string;
     habits: string;
     progress: string;
+    calendar: string;
     logout: string;
     yourSpace: string;
     appName: string;
@@ -29,6 +30,7 @@ export function AppShell({ children, title, description, userName, locale = "es"
     today: dictionary.common.today,
     habits: dictionary.common.habits,
     progress: dictionary.common.progress,
+    calendar: dictionary.common.calendar,
     logout: dictionary.common.logout,
     yourSpace: dictionary.common.yourSpace,
     appName: dictionary.common.appName,
@@ -40,6 +42,7 @@ export function AppShell({ children, title, description, userName, locale = "es"
     { href: `/${locale}/today`, label: resolvedLabels.today },
     { href: `/${locale}/habits`, label: resolvedLabels.habits },
     { href: `/${locale}/progress`, label: resolvedLabels.progress },
+    { href: `/${locale}/calendar`, label: resolvedLabels.calendar },
   ] as const;
 
   return (

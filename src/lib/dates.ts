@@ -1,11 +1,14 @@
 import {
   addDays,
+  addMonths,
   eachDayOfInterval,
+  endOfMonth,
   endOfWeek,
   format,
   isSameDay,
   parseISO,
   startOfDay,
+  startOfMonth,
   startOfWeek,
 } from "date-fns";
 
@@ -44,6 +47,25 @@ export function getWeekRange(baseDate = new Date()) {
     end,
     days: eachDayOfInterval({ start, end }),
   };
+}
+
+export function getMonthRange(baseDate = new Date()) {
+  const monthStart = startOfMonth(baseDate);
+  const monthEnd = endOfMonth(baseDate);
+  const start = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const end = endOfWeek(monthEnd, { weekStartsOn: 1 });
+
+  return {
+    monthStart,
+    monthEnd,
+    start,
+    end,
+    days: eachDayOfInterval({ start, end }),
+  };
+}
+
+export function shiftMonth(baseDate: Date, amount: number) {
+  return addMonths(baseDate, amount);
 }
 
 export function getWeekday(date: Date) {
